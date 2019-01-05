@@ -12,8 +12,6 @@ tqdm
 pandas
 pathlib
 seaborn
-v20
-oandapyV20
 pyti
 numpy
 stable-baselines
