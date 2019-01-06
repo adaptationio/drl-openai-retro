@@ -9,9 +9,15 @@ import tensorflow as tf
 from baselines.common.vec_env.dummy_vec_env import DummyVecEnv
 import baselines.ppo2.ppo2 as ppo2
 import baselines.ppo2.policies as policies
-import gym_remote.exceptions as gre
+#import gym_remote.exceptions as gre
 
-from sonic_util import make_env
+from sonic_util import AllowBacktracking, make_env
+from dumbrain.rl.retro_contest.install_games import installGamesFromDir
+installGamesFromDir(romdir='data/roms/')
+import retrowrapper
+import retro
+
+env = retro.make(game='SonicTheHedgehog2-Genesis', state='MetropolisZone.Act1')
 
 def main():
     """Run PPO until the environment throws an exception."""
@@ -34,7 +40,7 @@ def main():
                    total_timesteps=int(1e7))
 
 if __name__ == '__main__':
-    try:
-        main()
-    except gre.GymRemoteError as exc:
-        print('exception', exc)
+    #try:
+    main()
+    #except gre.GymRemoteError as exc:
+    #print('exception', exc)

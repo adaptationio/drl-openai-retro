@@ -4,15 +4,17 @@ Environments and wrappers for Sonic training.
 
 import gym
 import numpy as np
+import retro
 
 from baselines.common.atari_wrappers import WarpFrame, FrameStack
-import gym_remote.client as grc
+#import gym_remote.client as grc
 
 def make_env(stack=True, scale_rew=True):
     """
     Create an environment with some standard wrappers.
     """
-    env = grc.RemoteEnv('tmp/sock')
+    #env = grc.RemoteEnv('tmp/sock')
+    env = retro.make(game='SonicTheHedgehog-Genesis', state='GreenHillZone.Act1')
     env = SonicDiscretizer(env)
     if scale_rew:
         env = RewardScaler(env)
@@ -71,6 +73,7 @@ class AllowBacktracking(gym.Wrapper):
 
     def step(self, action): # pylint: disable=E0202
         obs, rew, done, info = self.env.step(action)
+        self.env.render()
         self._cur_x += rew
         rew = max(0, self._cur_x - self._max_x)
         self._max_x = max(self._max_x, self._cur_x)

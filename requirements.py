@@ -2,6 +2,7 @@ torch==0.4.0
 gym
 git+git://github.com/deepmind/dm_control.git
 git+https://github.com/ShangtongZhang/dm_control2gym.git@scalar_fix
+git+git://github.com/frenchie4111/dumbrain.git
 torchvision>=0.2.1
 atari-py>
 opencv-python
@@ -15,3 +16,6 @@ seaborn
 pyti
 numpy
 stable-baselines
+tqdm 
+retrowrapper 
+gym-retro
