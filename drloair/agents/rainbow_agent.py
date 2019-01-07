@@ -22,8 +22,10 @@ import retrowrapper
 import retro
 
 #env = retro.make(game='SonicTheHedgehog2-Genesis', state='MetropolisZone.Act1')
+class Rainbow():
+    def __init__(self):
 
-def main():
+    def train(self):
     """Run DQN until the environment throws an exception."""
     env = AllowBacktracking(make_env(stack=False, scale_rew=False))
     env = BatchedFrameStack(BatchedGymEnv([[env]]), num_images=4, concat=False)

@@ -13,19 +13,22 @@ import retro
 
 
 
+class RetroExample():
+    def __init__(self):
+        self.love = 'moose' 
 
-def main():
-    env = retro.make(game='SonicTheHedgehog2-Genesis', state='MetropolisZone.Act1')
-    obs = env.reset()
-    while True:
-        obs, rew, done, info = env.step(env.action_space.sample())
-        env.render()
-        if done:
-            obs = env.reset()
+    def train(self):
+        env = retro.make(game='SonicTheHedgehog2-Genesis', state='MetropolisZone.Act1')
+        obs = env.reset()
+        while True:
+            obs, rew, done, info = env.step(env.action_space.sample())
+            env.render()
+            if done:
+                obs = env.reset()
 
 
-if __name__ == '__main__':
-    main()
+#if __name__ == '__main__':
+    #main()
 
 
 #env = retro.make(game='SonicTheHedgehog-Genesis', state='GreenHillZone.Act1', record='.')
