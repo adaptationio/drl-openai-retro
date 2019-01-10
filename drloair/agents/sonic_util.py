@@ -9,7 +9,7 @@ import retro
 from baselines.common.atari_wrappers import WarpFrame, FrameStack
 #import gym_remote.client as grc
 
-def make_env(stack=True, scale_rew=True):
+def make_env(game=None, state=None, stack=False, scale_rew=True, allowbacktrace=True):
     """
     Create an environment with some standard wrappers.
     """
@@ -19,6 +19,8 @@ def make_env(stack=True, scale_rew=True):
     if scale_rew:
         env = RewardScaler(env)
     env = WarpFrame(env)
+    if allowbacktrace:
+        env = AllowBacktracking(env)
     if stack:
         env = FrameStack(env, 4)
     return env
@@ -32,7 +34,7 @@ class SonicDiscretizer(gym.ActionWrapper):
         super(SonicDiscretizer, self).__init__(env)
         buttons = ["B", "A", "MODE", "START", "UP", "DOWN", "LEFT", "RIGHT", "C", "Y", "X", "Z"]
         actions = [['LEFT'], ['RIGHT'], ['LEFT', 'DOWN'], ['RIGHT', 'DOWN'], ['DOWN'],
-                   ['DOWN', 'B'], ['B']]
+                   ['DOWN', 'B'], ['B'], [], ['LEFT', 'B'], ['RIGHT', 'B']]
         self._actions = []
         for action in actions:
             arr = np.array([False] * 12)
