@@ -110,20 +110,7 @@ model = PPO2(policy=CnnPolicy,
                       verbose=1,
                       tensorboard_log="./sonic/")
 
-#model = PPO2(CnnPolicy, env, learning_rate=2e-4, verbose=0,tensorboard_log="trader10year15m-32bk-reward-lr5-10m-2x256")
-#model = PPO2(CustomPolicy_2, env, learning_rate=1e-5, verbose=0,tensorboard_log="./ppo2full10-lstm-2/" )
-#model = PPO2(MlpLnLstmPolicy, env, verbose=0,tensorboard_log="./ppo2full10-3/" )
-#model = PPO2(CustomPolicy, env, verbose=0, learning_rate=1e-5, tensorboard_log="./ppo2fulltime105-3333333333/" )
-#model = DQN(CustomPolicy_3, env, verbose=0, prioritized_replay=True, tensorboard_log="./ppo2full10-2/" )
-#model = ACKTR(CustomPolicy, env, verbose=0, learning_rate=1e-6, tensorboard_log="./ppo2full10-2/" )
-#model = PPO2.load("trader10year15m-32bk-reward-lr5-100m-2x256-20y-shaped-7", env, policy=CustomPolicy, tensorboard_log="./ppo2full10/" )
-#model = PPO2.load("trader10year15m-32bk-reward-lr5-80m-2x256-20y-shaped-3", env, policy=CustomPolicy, tensorboard_log="./ppo2full10/" )
-#model = PPO2.load("trader10year15m-32bk-lstm", env, policy=CustomPolicy_2, tensorboard_log="./ppo2full10-10/" )
-#model.load("traderlstm.pkl")
-#mode = PPO2.load('traderlstm2', env, verbose=0)
-#model = PPO2(MlpLnLstmPolicy, env, verbose=1)
-#model = ACKTR(MlpPolicy, env, nprocs=num_cpu)
-#model.learn(total_timesteps=int(num_timesteps * 1.1), seed=seed)
+
 
 
 def evaluate(model, num_steps=14400):

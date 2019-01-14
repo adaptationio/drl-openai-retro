@@ -12,12 +12,12 @@ A Deep Reinforcement Learning Agent implementation for Open AI Retro
     Create (and activate) a new environment with Python 3.6.
     - __Linux__ or __Mac__: 
 	```bash
-	conda create --name ai-api python=3.6
+	conda create --name drl-openai-retro python=3.6
 	source activate drl-openai-retro
 	```
 	- __Windows__: 
 	```bash
-	conda create --name ai-api python=3.6 
+	conda create --name drl-openai-retro python=3.6 
 	activate drl-openai-retro
 	```
 - Install requirements:
