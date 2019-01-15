@@ -17,7 +17,7 @@ from stable_baselines.deepq import DQN
 #from template_env import Template_Gym
 
 #env = Template_Gym()
-from ..agents import sonic_util
+from ..agents.sonic_util import AllowBacktracking make_env
 
 import retrowrapper
 import retro
@@ -34,7 +34,7 @@ class PPO2_SB():
     
     def create_envs(self, n):
         for i in self.environs:            
-            self.env_fns.append(partial(sonic.util.make_env, game='SonicTheHedgehog-Genesis', state=i))
+            self.env_fns.append(partial(make_env, game='SonicTheHedgehog-Genesis', state=i))
             self.env_names.append('SonicTheHedgehog-Genesis' + '-' + i)
         
         return self.env_fns, self.env_names
