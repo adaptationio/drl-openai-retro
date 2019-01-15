@@ -3,6 +3,8 @@ import argparse
 import gym
 import numpy as np
 import argparse
+from dumbrain.rl.retro_contest.install_games import installGamesFromDir
+installGamesFromDir(romdir='data/roms/')
 from drloair import *
 parser = argparse.ArgumentParser()
 parser.add_argument("--algo", help="choose algorithm, eg PPO, rainbow, ",
@@ -21,7 +23,7 @@ else:
 
 
 def main():
-    pass
+    sonic_train = PPO2_SB()
     
     
 

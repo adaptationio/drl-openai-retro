@@ -17,23 +17,34 @@ from stable_baselines.deepq import DQN
 #from template_env import Template_Gym
 
 #env = Template_Gym()
-from sonic_util import AllowBacktracking, make_env
-from dumbrain.rl.retro_contest.install_games import installGamesFromDir
-installGamesFromDir(romdir='data/roms/')
+from ..agents import sonic_util
+
 import retrowrapper
 import retro
 
 timestamp = datetime.datetime.now().strftime('%y%m%d%H%M%S')
 
 class PPO2_SB():
-    def __init__(self, num_env=16):
+    def __init__(self):
         self.love = 'Ramona'
+        self.env_fns = [] 
+        self.env_names = []
+        self.environs = ['SpringYardZone.Act3', 'SpringYardZone.Act2', 'GreenHillZone.Act3','GreenHillZone.Act1','StarLightZone.Act2','StarLightZone.Act1','MarbleZone.Act2','MarbleZone.Act1','MarbleZone.Act3','ScrapBrainZone.Act2','LabyrinthZone.Act2','LabyrinthZone.Act1','LabyrinthZone.Act3', 'SpringYardZone.Act1','GreenHillZone.Act2','StarLightZone.Act3','ScrapBrainZone.Act1']
         
-        self.env = SubprocVecEnv([lambda: make_env(stack=False, scale_rew=True)] * num_env)
+    
+    def create_envs(self, n):
+        for i in self.environs:            
+            self.env_fns.append(partial(sonic.util.make_env, game='SonicTheHedgehog-Genesis', state=i))
+            self.env_names.append('SonicTheHedgehog-Genesis' + '-' + i)
+        
+        return self.env_fns, self.env_names
+
+    def train(self, num_env=1, n_timesteps=1000000, save='./default'):
+        self.create_envs(num_env)
         self.model = PPO2(policy=CnnPolicy,
-                      env=self.env,
+                      env=SubprocVecEnv(self.env_fns),
                       n_steps=8192,
-                      nminibatches=8*num_env,
+                      nminibatches=8,
                       lam=0.95,
                       gamma=0.99,
                       noptepochs=4,
@@ -42,9 +53,6 @@ class PPO2_SB():
                       cliprange=lambda _: 0.2,
                       verbose=1,
                       tensorboard_log="./sonic/")
-
-
-    def train(self, n_timesteps, save):
         self.model.learn(n_timesteps)
         self.model.save(save)
     

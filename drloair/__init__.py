@@ -1,2 +1,2 @@
-from .examples *
+from .examples import *
 from .agents import *
