@@ -36,8 +36,8 @@ class PPO2_SB():
         for i in self.environs:            
             self.env_fns.append(partial(make_env, game='SonicTheHedgehog-Genesis', state=i))
             self.env_names.append('SonicTheHedgehog-Genesis' + '-' + i)
-        
-        return self.env_fns, self.env_names
+        self.env = SubprocVecEnv(self.env_fns)
+    
 
     def train(self, num_env=1, n_timesteps=1000000, save='./default'):
         self.create_envs(num_env)
