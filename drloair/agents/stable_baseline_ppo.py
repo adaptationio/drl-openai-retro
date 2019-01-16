@@ -17,7 +17,7 @@ from stable_baselines.deepq import DQN
 #from template_env import Template_Gym
 
 #env = Template_Gym()
-from ..agents.sonic_util import AllowBacktracking make_env
+from ..agents.sonic_util import AllowBacktracking, make_env
 
 import retrowrapper
 import retro

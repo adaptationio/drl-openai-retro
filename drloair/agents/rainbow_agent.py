@@ -14,7 +14,7 @@ from anyrl.models import rainbow_models
 from anyrl.rollouts import BatchedPlayer, PrioritizedReplayBuffer, NStepPlayer
 from anyrl.spaces import gym_space_vectorizer
 #import gym_remote.exceptions as gre
-from ..agents.sonic_util import AllowBacktracking make_env
+from ..agents.sonic_util import AllowBacktracking, make_env
 #from sonic_util import AllowBacktracking, make_env
 import retrowrapper
 import retro

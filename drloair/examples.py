@@ -1,6 +1,6 @@
-from dumbrain.rl.retro_contest.install_games import installGamesFromDir
+#from dumbrain.rl.retro_contest.install_games import installGamesFromDir
 #colabInstallGames()
-installGamesFromDir(romdir='data/roms/')
+#installGamesFromDir(romdir='data/roms/')
 #import retro
 #list( filter( lambda game: game.startswith( 'Sonic' ), retro.list_games() ) )
 

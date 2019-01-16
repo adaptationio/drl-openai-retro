@@ -24,6 +24,7 @@ else:
 
 def main():
     sonic_train = PPO2_SB()
+    sonic_train.train()
     
     
 
