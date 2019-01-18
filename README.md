@@ -20,6 +20,13 @@ A Deep Reinforcement Learning Agent implementation for Open AI Retro
 	conda create --name drl-openai-retro python=3.6 
 	activate drl-openai-retro
 	```
+- Install tensorflow:
+    ```bash
+    conda install tensorflow-gpu
+	or
+	conda install tensorflow
+	```
+
 - Install requirements:
     ```bash
     conda install --yes --file requirements.txt
