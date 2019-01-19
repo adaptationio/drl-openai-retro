@@ -32,10 +32,10 @@ class PPO2_SB():
         self.environs = ['SpringYardZone.Act3', 'SpringYardZone.Act2', 'GreenHillZone.Act3','GreenHillZone.Act1','StarLightZone.Act2','StarLightZone.Act1','MarbleZone.Act2','MarbleZone.Act1','MarbleZone.Act3','ScrapBrainZone.Act2','LabyrinthZone.Act2','LabyrinthZone.Act1','LabyrinthZone.Act3', 'SpringYardZone.Act1','GreenHillZone.Act2','StarLightZone.Act3','ScrapBrainZone.Act1']
         
     
-    def create_envs(self, n):
+    def create_envs(self, n, game_name='SonicTheHedgehog-Genesis'):
         for i in self.environs:            
-            self.env_fns.append(partial(make_env, game='SonicTheHedgehog-Genesis', state=i))
-            self.env_names.append('SonicTheHedgehog-Genesis' + '-' + i)
+            self.env_fns.append(partial(make_env, game=game_name, state=i))
+            self.env_names.append(game_name + '-' + i)
         self.env = SubprocVecEnv(self.env_fns)
     
 
