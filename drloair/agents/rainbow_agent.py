@@ -22,7 +22,7 @@ import csv
 import os
 
 
-from sonic_util import AllowBacktracking, make_env
+#from sonic_util import AllowBacktracking, make_env
 #env = retro.make(game='SonicTheHedgehog2-Genesis', state='MetropolisZone.Act1')
 class Rainbow():
     def __init__(self):
@@ -66,7 +66,7 @@ class Rainbow():
 
         
     
-                  )
+                  
 
    
 

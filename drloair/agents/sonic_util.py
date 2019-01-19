@@ -14,8 +14,15 @@ def make_env(game=None, state=None, stack=False, scale_rew=True, allowbacktrace=
     Create an environment with some standard wrappers.
     """
     #env = grc.RemoteEnv('tmp/sock')
-    env = retro.make(game='SonicTheHedgehog-Genesis', state='GreenHillZone.Act1')
-    env = SonicDiscretizer(env)
+    #env = retro.make(game='SonicTheHedgehog-Genesis', state='GreenHillZone.Act1')
+    #env = retro.make(game='StreetsOfRage2-Genesis', state='1Player.Axel.Level1')
+    #env = retro.make(game='StreetFighterIISpecialChampionEdition-Genesis', state='Champion.Level1.RyuVsGuile')
+    env = retro.make(game='SuperMarioWorld-Snes', state='Bridges1')
+    #SuperMarioWorld-Snes ['Bridges1',
+
+    #env = SonicDiscretizer(env)
+    #env = StreetOfRage2Discretizer(env)
+    env = StreeFighter2Discretizer(env)
     if scale_rew:
         env = RewardScaler(env)
     env = WarpFrame(env)
@@ -35,6 +42,69 @@ class SonicDiscretizer(gym.ActionWrapper):
         buttons = ["B", "A", "MODE", "START", "UP", "DOWN", "LEFT", "RIGHT", "C", "Y", "X", "Z"]
         actions = [['LEFT'], ['RIGHT'], ['LEFT', 'DOWN'], ['RIGHT', 'DOWN'], ['DOWN'],
                    ['DOWN', 'B'], ['B'], [], ['LEFT', 'B'], ['RIGHT', 'B']]
+        self._actions = []
+        for action in actions:
+            arr = np.array([False] * 12)
+            for button in action:
+                arr[buttons.index(button)] = True
+            self._actions.append(arr)
+        self.action_space = gym.spaces.Discrete(len(self._actions))
+
+    def action(self, a): # pylint: disable=W0221
+        return self._actions[a].copy()
+
+class StreetOfRage2Discretizer(gym.ActionWrapper):
+    """
+    Wrap a gym-retro environment and make it use discrete
+    actions for the Sonic game.
+    """
+    def __init__(self, env):
+        super(StreetOfRage2Discretizer, self).__init__(env)
+        buttons = ["B", "A", "MODE", "START", "UP", "DOWN", "LEFT", "RIGHT", "C", "Y", "X", "Z"]
+        actions = [['LEFT'], ['RIGHT'], ['UP'], ['DOWN'], ['LEFT', 'DOWN'], ['RIGHT', 'DOWN'], ['DOWN'],
+                   ['DOWN', 'B'], ['B'], [], ['LEFT', 'B'], ['RIGHT', 'B']]
+        self._actions = []
+        for action in actions:
+            arr = np.array([False] * 12)
+            for button in action:
+                arr[buttons.index(button)] = True
+            self._actions.append(arr)
+        self.action_space = gym.spaces.Discrete(len(self._actions))
+
+    def action(self, a): # pylint: disable=W0221
+        return self._actions[a].copy()
+
+class StreeFighter2Discretizer(gym.ActionWrapper):
+    """
+    Wrap a gym-retro environment and make it use discrete
+    actions for the Sonic game.
+    """
+    def __init__(self, env):
+        super(StreeFighter2Discretizer, self).__init__(env)
+        buttons = ["B", "A", "MODE", "START", "UP", "DOWN", "LEFT", "RIGHT", "C", "Y", "X", "Z"]
+        actions = [['LEFT'], ['RIGHT'], ['UP'], ['DOWN'], ['LEFT', 'DOWN'], ['RIGHT', 'DOWN'],
+                   ['DOWN', 'B'], ['B'], ['DOWN', 'A'], ['A'], ['DOWN', 'C'], ['C']]
+        self._actions = []
+        for action in actions:
+            arr = np.array([False] * 12)
+            for button in action:
+                arr[buttons.index(button)] = True
+            self._actions.append(arr)
+        self.action_space = gym.spaces.Discrete(len(self._actions))
+
+    def action(self, a): # pylint: disable=W0221
+        return self._actions[a].copy()
+
+class SuperMarioWorldDiscretizer(gym.ActionWrapper):
+    """
+    Wrap a gym-retro environment and make it use discrete
+    actions for the Sonic game.
+    """
+    def __init__(self, env):
+        super(SuperMarioWorldDiscretizer, self).__init__(env)
+        buttons = ["B", "A", "MODE", "START", "UP", "DOWN", "LEFT", "RIGHT", "C", "Y", "X", "Z"]
+        actions = [['LEFT'], ['RIGHT'], ['RIGHT', 'B'], ['B'], ['RIGHT', 'A'], ['A'],
+                   ['RIGHT', 'C'], ['C'], ['RIGHT', 'Y'], ['Y'], ['RIGHT', 'X'], ['X'], ['RIGHT', 'Z'], ['Z']]
         self._actions = []
         for action in actions:
             arr = np.array([False] * 12)
