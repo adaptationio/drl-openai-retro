@@ -17,7 +17,8 @@ def make_env(game=None, state=None, stack=False, scale_rew=True, allowbacktrace=
     #env = retro.make(game='SonicTheHedgehog-Genesis', state='GreenHillZone.Act1')
     #env = retro.make(game='StreetsOfRage2-Genesis', state='1Player.Axel.Level1')
     #env = retro.make(game='StreetFighterIISpecialChampionEdition-Genesis', state='Champion.Level1.RyuVsGuile')
-    env = retro.make(game='SuperMarioWorld-Snes', state='Bridges1')
+    #env = retro.make(game='SuperMarioWorld-Snes', state='Bridges1')
+    env = retro.make(game=game, state=state)
     #SuperMarioWorld-Snes ['Bridges1',
 
     #env = SonicDiscretizer(env)

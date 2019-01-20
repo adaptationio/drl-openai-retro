@@ -17,9 +17,9 @@ args = parser.parse_args()
 if args.algo == 'rainbow' or 'Rainbow':
     agent = Rainbow()
 elif args.algo == 'ppo' or 'PPO':
-    agent = PPO_SB()
+    agent = PPO2_SB()
 else:
-    agent = PPO_SB()
+    agent = PPO2_SB()
 args = parser.parse_args()
 if args.game:
     game_arg = args.game
@@ -35,6 +35,7 @@ else:
 
 
 def main():
+    agent = PPO2_SB()
     agent.train(game=game_arg, state=state_arg)
     
     

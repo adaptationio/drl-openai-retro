@@ -33,9 +33,9 @@ class PPO2_SB():
         self.environsv2 = ['1Player.Axel.Level1']
     
     def create_envs(self, game_name, state_name, num_env):
-        for i in self.environsv2:            
-            self.env_fns.append(partial(make_env, game=game_name, state=i))
-            self.env_names.append(game_name + '-' + i)
+        for i in range(num_env):            
+            self.env_fns.append(partial(make_env, game=game_name, state=state_name))
+            self.env_names.append(game_name + '-' + state_name)
         self.env = SubprocVecEnv(self.env_fns)
     
 
