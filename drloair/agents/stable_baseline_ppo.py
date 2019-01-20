@@ -17,7 +17,7 @@ from stable_baselines.deepq import DQN
 #from template_env import Template_Gym
 
 #env = Template_Gym()
-from ..agents.sonic_util import AllowBacktracking, make_env
+from ..agents.retro_util import AllowBacktracking, make_env
 
 import retrowrapper
 import retro
@@ -32,15 +32,15 @@ class PPO2_SB():
         self.environs = ['SpringYardZone.Act3', 'SpringYardZone.Act2', 'GreenHillZone.Act3','GreenHillZone.Act1','StarLightZone.Act2','StarLightZone.Act1','MarbleZone.Act2','MarbleZone.Act1','MarbleZone.Act3','ScrapBrainZone.Act2','LabyrinthZone.Act2','LabyrinthZone.Act1','LabyrinthZone.Act3', 'SpringYardZone.Act1','GreenHillZone.Act2','StarLightZone.Act3','ScrapBrainZone.Act1']
         self.environsv2 = ['1Player.Axel.Level1']
     
-    def create_envs(self, n, game_name='SonicTheHedgehog-Genesis', state_name='1Player.Axel.Level1'):
+    def create_envs(self, game_name, state_name, num_env):
         for i in self.environsv2:            
             self.env_fns.append(partial(make_env, game=game_name, state=i))
             self.env_names.append(game_name + '-' + i)
         self.env = SubprocVecEnv(self.env_fns)
     
 
-    def train(self, num_env=1, n_timesteps=1000000, save='./default'):
-        self.create_envs(num_env)
+    def train(self, game, state, num_e=1, n_timesteps=1000000, save='./default'):
+        self.create_envs(game_name=game, state_name=state, num_env=num_e)
         self.model = PPO2(policy=CnnPolicy,
                       env=SubprocVecEnv(self.env_fns),
                       n_steps=8192,

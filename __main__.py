@@ -9,22 +9,33 @@ from drloair import *
 parser = argparse.ArgumentParser()
 parser.add_argument("--algo", help="choose algorithm, eg PPO, rainbow, ",
                     type=str)
-parser.add_argument("--env", help="Select Retro environment",
+parser.add_argument("--game", help="Select Retro environment",
+                    type=str)
+parser.add_argument("--state", help="Select Retro environment State",
                     type=str)
 args = parser.parse_args()
 if args.algo == 'rainbow' or 'Rainbow':
     agent = Rainbow()
 elif args.algo == 'ppo' or 'PPO':
-    agent = PPO()
+    agent = PPO_SB()
 else:
-    love = 'Ramona'
+    agent = PPO_SB()
+args = parser.parse_args()
+if args.game:
+    game_arg = args.game
+else:
+    game_arg = 'SonicTheHedgehog-Genesis'
+if args.state:
+    state_arg = args.state
+else:
+    state_arg = 'GreenHillZone.Act1'
+    
 
 
 
 
 def main():
-    sonic_train = PPO2_SB()
-    sonic_train.train()
+    agent.train(game=game_arg, state=state_arg)
     
     
 
