@@ -9,7 +9,7 @@ import retro
 from baselines.common.atari_wrappers import WarpFrame, FrameStack
 #import gym_remote.client as grc
 
-def make_env(game=None, state=None, stack=False, scale_rew=True, allowbacktrace=True):
+def make_env(game=None, state=None, stack=True, scale_rew=True, allowbacktrace=False):
     """
     Create an environment with some standard wrappers.
     """
@@ -21,12 +21,13 @@ def make_env(game=None, state=None, stack=False, scale_rew=True, allowbacktrace=
     env = retro.make(game=game, state=state)
     #SuperMarioWorld-Snes ['Bridges1',
 
-    #env = SonicDiscretizer(env)
+    env = SonicDiscretizerV2(env)
     #env = StreetOfRage2Discretizer(env)
-    env = StreeFighter2Discretizer(env)
+    #env = StreeFighter2Discretizer(env)
     if scale_rew:
         env = RewardScaler(env)
     env = WarpFrame(env)
+    env = CustomGym(env)
     if allowbacktrace:
         env = AllowBacktracking(env)
     if stack:
@@ -43,6 +44,46 @@ class SonicDiscretizer(gym.ActionWrapper):
         buttons = ["B", "A", "MODE", "START", "UP", "DOWN", "LEFT", "RIGHT", "C", "Y", "X", "Z"]
         actions = [['LEFT'], ['RIGHT'], ['LEFT', 'DOWN'], ['RIGHT', 'DOWN'], ['DOWN'],
                    ['DOWN', 'B'], ['B'], [], ['LEFT', 'B'], ['RIGHT', 'B']]
+        self._actions = []
+        for action in actions:
+            arr = np.array([False] * 12)
+            for button in action:
+                arr[buttons.index(button)] = True
+            self._actions.append(arr)
+        self.action_space = gym.spaces.Discrete(len(self._actions))
+
+    def action(self, a): # pylint: disable=W0221
+        return self._actions[a].copy()
+
+class SonicDiscretizerV2(gym.ActionWrapper):
+    """
+    Wrap a gym-retro environment and make it use discrete
+    actions for the Sonic game.
+    """
+    def __init__(self, env):
+        super(SonicDiscretizerV2, self).__init__(env)
+        buttons = ["B", "A", "MODE", "START", "UP", "DOWN", "LEFT", "RIGHT", "C", "Y", "X", "Z"]
+        actions = [['LEFT'], ['RIGHT'], ['LEFT', 'DOWN'], ['RIGHT', 'DOWN'], ['DOWN'], ['DOWN', 'B'], ['B']]
+        self._actions = []
+        for action in actions:
+            arr = np.array([False] * 12)
+            for button in action:
+                arr[buttons.index(button)] = True
+            self._actions.append(arr)
+        self.action_space = gym.spaces.Discrete(len(self._actions))
+
+    def action(self, a): # pylint: disable=W0221
+        return self._actions[a].copy()
+
+class SonicDiscretizerV3(gym.ActionWrapper):
+    """
+    Wrap a gym-retro environment and make it use discrete
+    actions for the Sonic game.
+    """
+    def __init__(self, env):
+        super(SonicDiscretizerV3, self).__init__(env)
+        buttons = ["B", "A", "MODE", "START", "UP", "DOWN", "LEFT", "RIGHT", "C", "Y", "X", "Z"]
+        actions = [['RIGHT'], ['RIGHT', 'DOWN'], ['DOWN','B'], ['RIGHT','B'], []]
         self._actions = []
         for action in actions:
             arr = np.array([False] * 12)
@@ -150,4 +191,21 @@ class AllowBacktracking(gym.Wrapper):
         self._cur_x += rew
         rew = max(0, self._cur_x - self._max_x)
         self._max_x = max(self._max_x, self._cur_x)
+        return obs, rew, done, info
+
+
+class CustomGym(gym.Wrapper):
+    """
+    add custom features
+    """
+    def __init__(self, env):
+        super(CustomGym, self).__init__(env)
+        self.level_pred = env.level_pred
+
+    def reset(self, **kwargs): # pylint: disable=E0202
+        return self.env.reset(**kwargs)
+
+    def step(self, action): # pylint: disable=E0202
+        self.env.render()
+        obs, rew, done, info = self.env.step(action)
         return obs, rew, done, info
