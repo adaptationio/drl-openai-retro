@@ -33,18 +33,20 @@ class PPO2_SB():
         self.environsv2 = ['1Player.Axel.Level1']
     
     def create_envs(self, game_name, state_name, num_env):
+        self.env_fns.append(partial(make_env, game=game_name, state=state_name))
+        self.env_names.append(game_name + '-' + state_name)
         for i in range(num_env):            
             self.env_fns.append(partial(make_env, game=game_name, state=state_name))
             self.env_names.append(game_name + '-' + state_name)
         self.env = SubprocVecEnv(self.env_fns)
     
 
-    def train(self, game, state, num_e=1, n_timesteps=1000000, save='./default'):
+    def train(self, game, state, num_e=32, n_timesteps=100000000, save='./default'):
         self.create_envs(game_name=game, state_name=state, num_env=num_e)
         self.model = PPO2(policy=CnnPolicy,
                       env=SubprocVecEnv(self.env_fns),
                       n_steps=8192,
-                      nminibatches=8,
+                      nminibatches=num_e,
                       lam=0.95,
                       gamma=0.99,
                       noptepochs=4,

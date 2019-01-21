@@ -9,7 +9,7 @@ import retro
 from baselines.common.atari_wrappers import WarpFrame, FrameStack
 #import gym_remote.client as grc
 
-def make_env(game=None, state=None, stack=True, scale_rew=True, allowbacktrace=False):
+def make_env(game=None, state=None, stack=True, scale_rew=True, allowbacktrace=False, custom=False):
     """
     Create an environment with some standard wrappers.
     """
@@ -27,7 +27,8 @@ def make_env(game=None, state=None, stack=True, scale_rew=True, allowbacktrace=F
     if scale_rew:
         env = RewardScaler(env)
     env = WarpFrame(env)
-    env = CustomGym(env)
+    if custom:
+        env = CustomGym(env)
     if allowbacktrace:
         env = AllowBacktracking(env)
     if stack:
@@ -200,7 +201,6 @@ class CustomGym(gym.Wrapper):
     """
     def __init__(self, env):
         super(CustomGym, self).__init__(env)
-        self.level_pred = env.level_pred
 
     def reset(self, **kwargs): # pylint: disable=E0202
         return self.env.reset(**kwargs)
