@@ -33,20 +33,22 @@ class PPO2_SB():
         self.environsv2 = ['1Player.Axel.Level1']
     
     def create_envs(self, game_name, state_name, num_env):
-        self.env_fns.append(partial(make_env, game=game_name, state=state_name))
-        self.env_names.append(game_name + '-' + state_name)
+        
         for i in range(num_env):            
             self.env_fns.append(partial(make_env, game=game_name, state=state_name))
             self.env_names.append(game_name + '-' + state_name)
         self.env = SubprocVecEnv(self.env_fns)
     
 
-    def train(self, game, state, num_e=32, n_timesteps=100000000, save='./default'):
+    def train(self, game, state, num_e=16, n_timesteps=25000000, save='default2'):
         self.create_envs(game_name=game, state_name=state, num_env=num_e)
+        #self.model = PPO2.load("default2", SubprocVecEnv(self.env_fns), policy=CnnPolicy, tensorboard_log="./sonic/" )
+        #self.model = PPO2(CnnPolicy, SubprocVecEnv(self.env_fns), learning_rate=1e-5, verbose=1,tensorboard_log="./sonic/" )
+
         self.model = PPO2(policy=CnnPolicy,
                       env=SubprocVecEnv(self.env_fns),
                       n_steps=8192,
-                      nminibatches=num_e,
+                      nminibatches=8,
                       lam=0.95,
                       gamma=0.99,
                       noptepochs=4,
@@ -57,17 +59,24 @@ class PPO2_SB():
                       tensorboard_log="./sonic/")
         self.model.learn(n_timesteps)
         self.model.save(save)
+        self.model.learn(n_timesteps)
+        self.model.save(save+'2')
+        self.model.learn(n_timesteps)
+        self.model.save(save+'3')
+        self.model.learn(n_timesteps)
+        self.model.save(save+'4')
     
     
-    def evaluate(self, num_env=1, num_steps=14400):
+    def evaluate(self, game, state, num_e=1, num_steps=14400):
         """
         Evaluate a RL agent
         :param model: (BaseRLModel object) the RL Agent
         :param num_steps: (int) number of timesteps to evaluate it
         :return: (float) Mean reward
         """
-        self.create_envs(num_env)
-
+        
+        self.create_envs(game_name=game, state_name=state, num_env=num_e)
+        self.model = PPO2.load("default2", SubprocVecEnv(self.env_fns), policy=CnnPolicy, tensorboard_log="./sonic/" )
         episode_rewards = [[0.0] for _ in range(self.env.num_envs)]
         obs = self.env.reset()
         for i in range(num_steps):
@@ -85,7 +94,7 @@ class PPO2_SB():
 
         mean_rewards =  [0.0 for _ in range(self.env.num_envs)]
         n_episodes = 0
-        for i in range(self.seenv.num_envs):
+        for i in range(self.env.num_envs):
             mean_rewards[i] = np.mean(episode_rewards[i])     
             n_episodes += len(episode_rewards[i])   
 
@@ -95,3 +104,4 @@ class PPO2_SB():
 
         return mean_reward
         
+

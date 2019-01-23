@@ -5,11 +5,16 @@ Environments and wrappers for Sonic training.
 import gym
 import numpy as np
 import retro
+from collections import deque
+from gym import spaces
+import cv2
+import tensorflow as tf
+import json
 
 from baselines.common.atari_wrappers import WarpFrame, FrameStack
 #import gym_remote.client as grc
 
-def make_env(game=None, state=None, stack=True, scale_rew=True, allowbacktrace=False, custom=False):
+def make_env(game=None, state=None, stack=False, scale_rew=True, allowbacktrace=False, custom=True):
     """
     Create an environment with some standard wrappers.
     """
@@ -20,13 +25,13 @@ def make_env(game=None, state=None, stack=True, scale_rew=True, allowbacktrace=F
     #env = retro.make(game='SuperMarioWorld-Snes', state='Bridges1')
     env = retro.make(game=game, state=state)
     #SuperMarioWorld-Snes ['Bridges1',
-
-    env = SonicDiscretizerV2(env)
+    env.seed(0)
+    env = SonicDiscretizerV3(env)
     #env = StreetOfRage2Discretizer(env)
     #env = StreeFighter2Discretizer(env)
     if scale_rew:
         env = RewardScaler(env)
-    env = WarpFrame(env)
+    env = WarpFrameRGB(env)
     if custom:
         env = CustomGym(env)
     if allowbacktrace:
@@ -84,7 +89,7 @@ class SonicDiscretizerV3(gym.ActionWrapper):
     def __init__(self, env):
         super(SonicDiscretizerV3, self).__init__(env)
         buttons = ["B", "A", "MODE", "START", "UP", "DOWN", "LEFT", "RIGHT", "C", "Y", "X", "Z"]
-        actions = [['RIGHT'], ['RIGHT', 'DOWN'], ['DOWN','B'], ['RIGHT','B'], []]
+        actions = [['RIGHT'], ['LEFT'], ['RIGHT'], ['RIGHT', 'DOWN'], ['DOWN','B'], ['RIGHT','B'], ['DOWN'], ['B'], []]
         self._actions = []
         for action in actions:
             arr = np.array([False] * 12)
@@ -167,7 +172,7 @@ class RewardScaler(gym.RewardWrapper):
     drastically.
     """
     def reward(self, reward):
-        return reward * 0.01
+        return reward * 0.005
 
 class AllowBacktracking(gym.Wrapper):
     """
@@ -209,3 +214,16 @@ class CustomGym(gym.Wrapper):
         self.env.render()
         obs, rew, done, info = self.env.step(action)
         return obs, rew, done, info
+
+class WarpFrameRGB(gym.ObservationWrapper):
+    def __init__(self, env):
+        """Warp frames to 84x84 as done in the Nature paper and later work."""
+        gym.ObservationWrapper.__init__(self, env)
+        self.width = 84
+        self.height = 84
+        self.observation_space = spaces.Box(low=0, high=255,
+            shape=(self.height, self.width, 3), dtype=np.uint8)
+
+    def observation(self, frame):
+        frame = cv2.net_archsize(frame, (self.width, self.height), interpolation=cv2.INTER_AREA)
+        return frame
