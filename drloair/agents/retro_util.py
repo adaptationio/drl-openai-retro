@@ -225,5 +225,5 @@ class WarpFrameRGB(gym.ObservationWrapper):
             shape=(self.height, self.width, 3), dtype=np.uint8)
 
     def observation(self, frame):
-        frame = cv2.net_archsize(frame, (self.width, self.height), interpolation=cv2.INTER_AREA)
+        frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_AREA)
         return frame
