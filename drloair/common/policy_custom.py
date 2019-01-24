@@ -1,3 +1,6 @@
+from stable_baselines.common.policies import MlpLnLstmPolicy, FeedForwardPolicy, LstmPolicy, CnnPolicy, CnnLstmPolicy, CnnLnLstmPolicy
+
+
 class CustomPolicy(FeedForwardPolicy):
     def __init__(self, *args, **kwargs):
         super(CustomPolicy, self).__init__(*args, **kwargs,
@@ -20,3 +23,26 @@ class CustomPolicy_3(FeedForwardPolicy):
                                            layers=[256,256,256],
                                            layer_norm=True,
                                             feature_extraction="mlp")
+
+                                            
+
+class CustomPolicyCnn(CnnPolicy):
+    def __init__(self, *args, **kwargs):
+        super(CustomPolicyCnn, self).__init__(*args, **kwargs,
+                                           layers=[256,256],
+                                           layer_norm=True,
+                                            feature_extraction="cnn")
+
+class CustomPolicyCnnLstm(CnnLstmPolicy):
+    def __init__(self, *args, **kwargs):
+        super(CustomPolicyCnnLstm, self).__init__(*args, **kwargs,
+                                           layers=[256,256],
+                                           layer_norm=True,
+                                            feature_extraction="cnn")
+
+class CustomPolicyCnnLnLstm(CnnLstmPolicy):
+    def __init__(self, *args, **kwargs):
+        super(CustomPolicyCnnLnLstm, self).__init__(*args, **kwargs,
+                                           layers=[256,256],
+                                           layer_norm=True,
+                                            feature_extraction="cnn")
