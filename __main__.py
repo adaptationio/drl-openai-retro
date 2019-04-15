@@ -38,6 +38,7 @@ def main():
     agent = PPO2_SB()
     agent.train(game=game_arg, state=state_arg)
     #agent.evaluate(game=game_arg, state=state_arg)
+    agent.gen_pre_train(game=game_arg, state=state_arg)
     
     
 

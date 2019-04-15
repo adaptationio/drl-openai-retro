@@ -38,6 +38,7 @@ def make_env(game=None, state=None, stack=False, scale_rew=True, allowbacktrace=
         env = AllowBacktracking(env)
     if stack:
         env = FrameStack(env, 4)
+    env = Controller_Gym(env) 
     return env
 
 class SonicDiscretizer(gym.ActionWrapper):
@@ -89,7 +90,7 @@ class SonicDiscretizerV3(gym.ActionWrapper):
     def __init__(self, env):
         super(SonicDiscretizerV3, self).__init__(env)
         buttons = ["B", "A", "MODE", "START", "UP", "DOWN", "LEFT", "RIGHT", "C", "Y", "X", "Z"]
-        actions = [['RIGHT'], ['LEFT'], ['RIGHT'], ['RIGHT', 'DOWN'], ['DOWN','B'], ['RIGHT','B'], ['DOWN'], ['B'], []]
+        actions = [[], ['LEFT'], ['RIGHT'], ['B'], ['RIGHT', 'B'], ['DOWN'], ['DOWN','B'], ['RIGHT','B'], ['DOWN'], ['B'], []]
         self._actions = []
         for action in actions:
             arr = np.array([False] * 12)
@@ -227,3 +228,289 @@ class WarpFrameRGB(gym.ObservationWrapper):
     def observation(self, frame):
         frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_AREA)
         return frame
+
+import numpy as np
+
+import gym
+from gym import error, spaces, utils
+from gym.utils import seeding
+import numpy as np
+#from keyboard import KeyboardController, KeyLogger
+#from mouse import MouseController, MouseLogger
+
+class Controller_Gym(gym.Env):
+    metadata = {
+        "render.modes": ["human", "rgb_array"],
+    }
+    #Define Actions
+    ACTION = [0,1]
+
+    def __init__(self, env):
+        self.controlling = True
+        self.logging = True
+        #self.mouse_logger = MouseLogger()
+        #self.mouse_controller = MouseController()
+        self.keyboard_logger = KeyLogger()
+        #self.keyboard_controller = KeyboardController()
+        self.env = env
+        self.viewer = None
+        self.info = None
+        self.reward = None
+        self.done = False
+        self.state = None
+        #self.action_dim = 3
+        #self.state_dim = 109
+        self.num_envs = 1
+        self.num_envs_per_sub_batch = 1
+        self.total_pips = []
+        #self.player = self.env.player
+        #self.pips = self.env.pips
+        #self.starter = 0
+
+        # forward or backward in each dimension
+        #self.action_space = spaces.Discrete(3)
+        self.action_space = self.env.action_space
+
+        # observation is the x, y coordinate of the grid
+        #low = np.zeros(0, dtype=int)
+        #high =  np.array(1, dtype=int) - np.ones(len(self.maze_size), dtype=int)
+        #self.observation_space = spaces.Box(low=-100000, high=100000, shape=(109,))
+        self.observation_space = self.env.observation_space
+        #print("obs")
+        #print (self.observation_space)
+
+        # initial condition
+        #self.state = self.env.generate_number()
+        self.steps_beyond_done = None
+
+        # Simulation related variables.
+        self.seed()
+        #self.reset()
+
+        # Just need to initialize the relevant attributes
+        self.configure()
+
+    def __del__(self):
+        pass
+
+    def configure(self, display=None):
+        self.display = display
+
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
+
+    def step(self, action):
+        #self.state = self.env.generate_number()
+        #self.env.display()
+        #print(action)
+        action = self.keyboard_logger.actions()
+        #action = 1
+        #self.placement = self.env.placement
+        self.next_state, self.reward, self.done, info = self.env.step(action)
+        #self.info = 0
+        #print(self.reward)
+        self.info = { 'pnl':1, 'nav':1, 'costs':1 }
+        #self.next_state = self.next_state.tolist()
+        #self.total_pips.append(self.pips)
+        if self.done:
+            pass
+        return self.next_state, self.reward, self.done, info
+
+    def reset(self):
+        self.state = self.env.reset()
+        #self.reward = np.array([reward])
+        #self.state = self.state.tolist()
+        #self.state = np.array([self.state])
+        #self.steps_beyond_done = None
+        self.done = False
+        #self.done = np.array([self.done])
+        return self.state
+
+    def is_game_over(self):
+        pass
+        return
+
+    def render(self, mode="human", close=False):
+        self.env.render()
+        #self.env.display()
+        pass
+
+        return 
+
+
+from pynput import keyboard
+from pynput.keyboard import Key, Controller
+moves =[False, False]
+
+class KeyLogger():
+    def __init__(self):
+        self.moose = "9"
+        self.listener = keyboard.Listener(on_press=self.on_press,on_release=self.on_release)
+        self.listener.start()
+        self.moves = [False, False, False, False, False]
+        self.action = 0
+    def on_press(self, key):
+        try:
+            print('alphanumeric key {0} pressed'.format(
+                key.char))
+            self.moose = key
+            print(key)
+            if key.char == '1':
+                self.moves[1] = True
+            if key.char == '0':
+                self.moves[0] = True
+            if key.char == '2':
+                self.moves[2] = True
+            if key.char == '3':
+                self.moves[3] = True
+            if key.char == '4':
+                self.moves[4] = True
+                
+        
+        except AttributeError:
+            print('special key {0} pressed'.format(
+                key))
+        return 
+
+    def on_release(self, key):
+        print('{0} released'.format(
+            key))
+        #self.moose = ''
+        moose = key
+        if key.char == "0":
+            self.moves[0] = False
+        if key.char == "1":
+            self.moves[1] = False
+        if key.char == "2":
+            self.moves[2] = False
+        if key.char == "3":
+            self.moves[3] = False
+        if key.char == "4":
+            self.moves[4] = False
+        if key == keyboard.Key.esc:
+            # Stop listener
+            return False
+    def actions(self):
+        if self.moves[3] == True and self.moves[2] == True:
+            self.action = 4  
+        elif self.moves[1] == True:
+            self.action = 1
+        elif self.moves[2] == True:
+            self.action = 2
+        elif self.moves[3] == True:
+            self.action = 3
+        elif self.moves[3] == True:
+            self.action = 3
+        
+
+        else:
+            self.action = 0
+        return self.action
+
+
+
+
+class KeyboardController():
+    def __init__(self):
+        self.moose = "yeah"
+        self.keyboard = Controller()
+    
+    def press(self, key):
+        self.keyboard.press(Key.key)
+
+    def release(self, key):
+        self.keyboard.release(Key.key)
+
+    def press_release(self, key):
+        self.keyboard.press(Key.key)
+        self.keyboard.release(Key.key)
+    
+    def typeing(self, string):
+        self.keyboard.type(string)
+
+
+
+from pynput import mouse
+from pynput.mouse import Button, Controller
+
+class MouseLogger():
+    def __init__(self):
+        self.test= "test"
+        self.listener = mouse.Listener(on_move=self.on_move,on_click=self.on_click,on_scroll=self.on_scroll)
+        self.listener()
+    def on_move(self, x, y):
+        print('Pointer moved to {0}'.format(
+            (x, y)))
+
+    def on_click(self, x, y, button, pressed):
+        print('{0} at {1}'.format(
+            'Pressed' if pressed else 'Released',
+            (x, y)))
+        if not pressed:
+            # Stop listener
+            return False
+
+    def on_scroll(self, x, y, dx, dy):
+        print('Scrolled {0} at {1}'.format(
+            'down' if dy < 0 else 'up',
+            (x, y)))
+
+    def listener_block(self):
+        with mouse.Listener(
+            on_move=self.on_move,
+            on_click=self.on_click,
+            on_scroll=self.on_scroll) as self.listener:
+            self.listener.join()
+
+class MouseController():
+    def __init__(self):
+        pass
+        self.mouse = Controller()
+
+    def mouse_position(self):
+        # Read pointer position
+        print('The current pointer position is {0}'.format(
+        self.mouse.position))
+        return self.mouse.position
+    
+    def mouse_postiion_set(self, x, y):
+
+        # Set pointer position
+        self.mouse.position = (x, y)
+        print('Now we have moved it to {0}'.format(
+        self.mouse.position))
+
+    def mouse_move(self, x, y):
+        # Move pointer relative to current position
+        self.mouse.move(x, y)
+
+    def mouse_press(self, right=False):
+        if right == True:
+            self.mouse.press(Button.right)
+        else:
+            self.mouse.press(Button.left)
+
+    def mouse_release(self, right=False):
+        if right == True:
+            self.mouse.release(Button.right)
+        else:
+            self.mouse.release(Button.left)
+
+    def mouse_double_click(self, right=False):
+        # Double click; this is different from pressing and releasing
+        # twice on Mac OSX
+        if right == 'right' or right == True:
+            self.mouse.click(Button.right, 2)
+        else:
+            self.mouse.click(Button.right, 2)
+
+    def mouse_scroll(self, x, y):
+        # Scroll two steps down
+        self.mouse.scroll(x, y)
+
+
+    
+    
+    
+    

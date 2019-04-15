@@ -13,6 +13,10 @@ from stable_baselines.common.vec_env import DummyVecEnv, SubprocVecEnv,VecNormal
 from stable_baselines.common import set_global_seeds
 from stable_baselines import ACKTR, PPO2
 from stable_baselines.deepq import DQN
+from stable_baselines import DQN
+from stable_baselines.gail import generate_expert_traj
+from stable_baselines import PPO2
+from stable_baselines.gail import ExpertDataset
 #from stable_baselines.deepq.policies import FeedForwardPolicy
 #from template_env import Template_Gym
 
@@ -31,6 +35,7 @@ class PPO2_SB():
         self.env_names = []
         self.environs = ['SpringYardZone.Act3', 'SpringYardZone.Act2', 'GreenHillZone.Act3','GreenHillZone.Act1','StarLightZone.Act2','StarLightZone.Act1','MarbleZone.Act2','MarbleZone.Act1','MarbleZone.Act3','ScrapBrainZone.Act2','LabyrinthZone.Act2','LabyrinthZone.Act1','LabyrinthZone.Act3', 'SpringYardZone.Act1','GreenHillZone.Act2','StarLightZone.Act3','ScrapBrainZone.Act1']
         self.environsv2 = ['1Player.Axel.Level1']
+        self.generate_expert_traj = generate_expert_traj
     
     def create_envs(self, game_name, state_name, num_env):
         
@@ -40,7 +45,7 @@ class PPO2_SB():
         self.env = SubprocVecEnv(self.env_fns)
     
 
-    def train(self, game, state, num_e=16, n_timesteps=25000000, save='default2'):
+    def train(self, game, state, num_e=1, n_timesteps=25000000, save='default2'):
         self.create_envs(game_name=game, state_name=state, num_env=num_e)
         #self.model = PPO2.load("default2", SubprocVecEnv(self.env_fns), policy=CnnPolicy, tensorboard_log="./sonic/" )
         #self.model = PPO2(CnnPolicy, SubprocVecEnv(self.env_fns), learning_rate=1e-5, verbose=1,tensorboard_log="./sonic/" )
@@ -103,5 +108,41 @@ class PPO2_SB():
         print("Mean reward:", mean_reward, "Num episodes:", n_episodes)
 
         return mean_reward
+
+    def pre_train(self):
+        # Using only one expert trajectory
+        # you can specify `traj_limitation=-1` for using the whole dataset
+        dataset = ExpertDataset(expert_path='expert_cartpole.npz',
+                                                                                                traj_limitation=1, batch_size=128)
+
+        model = PPO2('MlpPolicy', 'CartPole-v1', verbose=1)
+        # Pretrain the PPO2 model
+        model.pretrain(dataset, n_epochs=1000)
+
+        # As an option, you can train the RL agent
+        # model.learn(int(1e5))
+
+        # Test the pre-trained model
+        env = model.get_env()
+        obs = env.reset()
+
+        reward_sum = 0.0
+        for _ in range(1000):
+            action, _ = model.predict(obs)
+            obs, reward, done, _ = env.step(action)
+            reward_sum += reward
+            env.render()
+            if done:
+                print(reward_sum)
+                reward_sum = 0.0
+                obs = env.reset()
+
+        env.close()
+
+    def gen_pre_train(self, game, state, num_e=1, save='default2', episodes=10):
+        self.create_envs(game_name=game, state_name=state, num_env=num_e)
+        env=SubprocVecEnv(self.env_fns)
+        self.expert_agent = "moose"
+        self.generate_expert_traj(self.expert_agent, save, env, n_episodes=episodes)
         
 
